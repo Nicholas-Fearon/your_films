@@ -6,10 +6,11 @@ import { currentUser } from "@clerk/nextjs/server";
 export default async function MovieDetails({ params }) {
   const user = await currentUser();
   const { id } = await params;
-
+console.log("This is my user log", user)
   const response = await fetch(
     `https://api.themoviedb.org/3/movie/${id}?api_key=f47b625a3ecff64d5d999ad0d8f5b88f`
   );
+ 
   const movie = await response.json();
 
   let content = [];
