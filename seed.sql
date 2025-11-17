@@ -10,13 +10,13 @@ CREATE TABLE genres (
   type_id INT REFERENCES types(id)
 );
 
--- 2. Users table (no reference to likes here yet)
+-- 2. Users table with UNIQUE constraint on clerk_id
 CREATE TABLE users (
   id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   username TEXT,
   bio TEXT,
   favorites TEXT,
-  clerk_id TEXT
+  clerk_id TEXT UNIQUE NOT NULL
 );
 
 -- 3. Likes table (reference users)
@@ -30,7 +30,7 @@ CREATE TABLE likes (
   UNIQUE(user_id, review_id, comment_id, vote_type)
 );
 
--- 4. Reviews (reference users, types, likes)
+-- 4. Reviews (reference users, types)
 CREATE TABLE review (
   id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   content TEXT,
