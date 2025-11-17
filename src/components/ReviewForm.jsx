@@ -1,7 +1,9 @@
 import { db } from "@/utils/db";
 import { auth } from "@clerk/nextjs/server";
+import { revalidatePath } from "next/cache";
 
-export default async function ReviewForm({ typeid, movieid }) {
+
+export default async function ReviewForm({ movieId }) {
   const { userId } = await auth();
 
   async function handleSubmit(formData) {
@@ -22,18 +24,18 @@ export default async function ReviewForm({ typeid, movieid }) {
         title,
         content,
         userId,
-        typeid,
-        movieid,
+        movieId,
       });
 
       await db.query(
-        `INSERT INTO review (title, content, clerk_id, types_id, movie_id) VALUES ($1, $2, $3, $4, $5)`,
-        [title, content, userId, typeid, movieid]
+        `INSERT INTO review (title, content, clerk_id, movie_id) VALUES ($1, $2, $3, $4, $5)`,
+        [title, content, userId, movieId]
       );
 
-      revalidatePath("/film");
+      revalidatePath(`/films/${movieId}`);
     } catch (error) {
       console.error("Error submitting review:", error);
+      throw error;
     }
   }
 
@@ -62,9 +64,6 @@ export default async function ReviewForm({ typeid, movieid }) {
         />
       </div>
 
-      <input type="hidden" name="type" value={typeid} />
-      <input type="hidden" name="movie_id" value={movieid} />
-
       <div className="mb-4">
         <label
           htmlFor="content"
@@ -77,6 +76,7 @@ export default async function ReviewForm({ typeid, movieid }) {
           name="content"
           placeholder="Enter your review"
           rows="5"
+          required
           className="w-full p-3 rounded-lg bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
         />
       </div>

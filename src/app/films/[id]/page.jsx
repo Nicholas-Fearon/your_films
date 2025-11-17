@@ -53,7 +53,7 @@ export default async function MovieDetails({ params }) {
           <p className="mt-2 text-sm text-gray-400">
             Release Date: {movie.release_date}
           </p>
-          <ReviewForm movieid={id} />
+          <ReviewForm movieId={id} />
 
           {user && <p className="mt-4">Username: {user.username}</p>}
 
