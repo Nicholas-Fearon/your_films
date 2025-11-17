@@ -21,7 +21,7 @@ export default async function Header() {
         </Link>
         {userId ? (
           <Link
-            href={`/profile/${userId}`}
+            href={`/profile`}
             className="hover:text-gray-300 transition-colors duration-300 font-semibold"
           >
             Profile

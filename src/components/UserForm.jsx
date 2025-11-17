@@ -5,12 +5,21 @@ import { revalidatePath } from "next/cache";
 export default async function UserForm() {
   const { userId } = await auth();
 
+  if (!userId) {
+    return <p className="text-white">Loading...</p>;
+  }
+
   // Fetch user data
-  const userData = await db.query(
-    "SELECT username, bio FROM users WHERE clerk_id = $1",
-    [userId]
-  );
-  const userDetails = userData.rows[0] || { username: "", bio: "" };
+  let userDetails = { username: "", bio: "" };
+  try {
+    const userData = await db.query(
+      "SELECT username, bio FROM users WHERE clerk_id = $1",
+      [userId]
+    );
+    userDetails = userData.rows[0] || { username: "", bio: "" };
+  } catch (error) {
+    console.error("Error fetching user data:", error);
+  }
 
   async function handleSubmit(formData) {
     "use server";
@@ -18,6 +27,11 @@ export default async function UserForm() {
     const username = formData.get("username");
     const bio = formData.get("bio");
     console.log("Form submitted with:", username, bio);
+
+    if (!username || !bio) {
+      console.error("Username and bio are required");
+      return;
+    }
 
     try {
       await db.query(
@@ -29,14 +43,10 @@ export default async function UserForm() {
       );
       console.log("Database updated successfully");
 
-      revalidatePath(`/profile`);
+      revalidatePath("/profile");
     } catch (error) {
       console.error("Error saving user data:", error);
     }
-  }
-
-  if (!userId) {
-    return <p>Loading...</p>;
   }
 
   return (
